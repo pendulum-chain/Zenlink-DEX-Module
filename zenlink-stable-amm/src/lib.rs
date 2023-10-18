@@ -49,11 +49,9 @@ mod primitives;
 mod utils;
 mod weights;
 
+use codec::Codec;
 use frame_support::{
-	dispatch::{Codec, DispatchResult},
-	pallet_prelude::*,
-	traits::UnixTime,
-	transactional, PalletId,
+	dispatch::DispatchResult, pallet_prelude::*, traits::UnixTime, transactional, PalletId,
 };
 use orml_traits::MultiCurrency;
 use sp_arithmetic::traits::{checked_pow, AtLeast32BitUnsigned, CheckedAdd, One, Zero};
@@ -461,7 +459,7 @@ pub mod pallet {
 			amounts: Vec<Balance>,
 			min_mint_amount: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
@@ -494,7 +492,7 @@ pub mod pallet {
 			in_amount: Balance,
 			min_out_amount: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
@@ -531,7 +529,7 @@ pub mod pallet {
 			lp_amount: Balance,
 			min_amounts: Vec<Balance>,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
@@ -562,7 +560,7 @@ pub mod pallet {
 			index: u32,
 			min_amount: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
@@ -593,7 +591,7 @@ pub mod pallet {
 			amounts: Vec<Balance>,
 			max_burn_amount: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
@@ -627,7 +625,7 @@ pub mod pallet {
 			base_amounts: Vec<Balance>,
 			min_to_mint: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let now = frame_system::Pallet::<T>::block_number();
@@ -667,7 +665,7 @@ pub mod pallet {
 			min_amounts_meta: Vec<Balance>,
 			min_amounts_base: Vec<Balance>,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let now = frame_system::Pallet::<T>::block_number();
@@ -708,7 +706,7 @@ pub mod pallet {
 			i: u32,
 			min_amount: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let now = frame_system::Pallet::<T>::block_number();
@@ -751,7 +749,7 @@ pub mod pallet {
 			dx: Balance,
 			min_dy: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let now = frame_system::Pallet::<T>::block_number();
@@ -795,7 +793,7 @@ pub mod pallet {
 			dx: Balance,
 			min_dy: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let now = frame_system::Pallet::<T>::block_number();
@@ -826,7 +824,7 @@ pub mod pallet {
 			dx: Balance,
 			min_dy: Balance,
 			to: T::AccountId,
-			deadline: T::BlockNumber,
+			deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let now = frame_system::Pallet::<T>::block_number();
@@ -864,7 +862,7 @@ pub mod pallet {
 		/// - `pool_id`: The id of pool.
 		/// - `fee_receiver`: The new admin fee receiver of this pool.
 		#[pallet::call_index(13)]
-		#[pallet::weight(1_000_000)]
+		#[pallet::weight({1_000_000})]
 		#[transactional]
 		pub fn update_fee_receiver(
 			origin: OriginFor<T>,
@@ -891,7 +889,7 @@ pub mod pallet {
 		/// - `pool_id`: The id of pool.
 		/// - `new_swap_fee`: The new swap fee of this pool.
 		#[pallet::call_index(14)]
-		#[pallet::weight(1_000_000)]
+		#[pallet::weight({1_000_000})]
 		#[transactional]
 		pub fn set_swap_fee(
 			origin: OriginFor<T>,
@@ -919,7 +917,7 @@ pub mod pallet {
 		/// - `pool_id`: The id of pool.
 		/// - `new_admin_fee`: The new admin fee of this pool.
 		#[pallet::call_index(15)]
-		#[pallet::weight(1_000_000)]
+		#[pallet::weight({1_000_000})]
 		#[transactional]
 		pub fn set_admin_fee(
 			origin: OriginFor<T>,
@@ -950,7 +948,7 @@ pub mod pallet {
 		/// - `future_a`: The new A to ramp towards.
 		/// - `future_a_time`: Timestamp when the new A should be reached
 		#[pallet::call_index(16)]
-		#[pallet::weight(1_000_000)]
+		#[pallet::weight({1_000_000})]
 		#[transactional]
 		pub fn ramp_a(
 			origin: OriginFor<T>,
@@ -1033,7 +1031,7 @@ pub mod pallet {
 		///
 		/// - `pool_id`: The id of pool.
 		#[pallet::call_index(17)]
-		#[pallet::weight(1_000_000)]
+		#[pallet::weight({1_000_000})]
 		#[transactional]
 		pub fn stop_ramp_a(origin: OriginFor<T>, pool_id: T::PoolId) -> DispatchResult {
 			ensure_root(origin)?;

@@ -22,20 +22,20 @@ use serde::{Deserialize, Serialize};
 
 use codec::{Decode, Encode, FullCodec};
 use frame_support::{
-	inherent::Vec,
 	pallet_prelude::*,
 	sp_runtime::SaturatedConversion,
 	traits::{
 		Currency, ExistenceRequirement, ExistenceRequirement::AllowDeath, Get, WithdrawReasons,
 	},
-	PalletId, RuntimeDebug,
+	PalletId,
 };
 use sp_core::U256;
 use sp_runtime::traits::{
 	AccountIdConversion, Hash, MaybeSerializeDeserialize, One, StaticLookup, Zero,
 };
 use sp_std::{
-	collections::btree_map::BTreeMap, convert::TryInto, fmt::Debug, marker::PhantomData, prelude::*,
+	collections::btree_map::BTreeMap, convert::TryInto, fmt::Debug, marker::PhantomData,
+	prelude::*, vec::Vec,
 };
 
 // -------xcm--------
@@ -80,8 +80,6 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-		/// The only origin that can create pair.
-		type ControlOrigin: EnsureOrigin<<Self as frame_system::Config>::RuntimeOrigin>;
 		/// The assets interface beyond native currency and other assets.
 		type MultiAssetsHandler: MultiAssetsHandler<Self::AccountId, Self::AssetId>;
 		/// This pallet id.
@@ -113,7 +111,6 @@ pub mod pallet {
 
 	#[pallet::pallet]
 	#[pallet::without_storage_info]
-	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
 
 	/// Foreign foreign storage
@@ -157,7 +154,7 @@ pub mod pallet {
 		_,
 		Twox64Concat,
 		(T::AssetId, T::AssetId),
-		PairStatus<AssetBalance, T::BlockNumber, T::AccountId>,
+		PairStatus<AssetBalance, BlockNumberFor<T>, T::AccountId>,
 		ValueQuery,
 	>;
 
@@ -180,7 +177,7 @@ pub mod pallet {
 		_,
 		Twox64Concat,
 		(T::AssetId, T::AssetId),
-		PairStatus<AssetBalance, T::BlockNumber, T::AccountId>,
+		PairStatus<AssetBalance, BlockNumberFor<T>, T::AccountId>,
 		ValueQuery,
 	>;
 
@@ -205,6 +202,7 @@ pub mod pallet {
 	>;
 
 	#[pallet::genesis_config]
+	#[derive(frame_support::DefaultNoBound)]
 	/// Refer: https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol#L88
 	pub struct GenesisConfig<T: Config> {
 		/// The admin of the protocol fee.
@@ -218,34 +216,10 @@ pub mod pallet {
 		pub fee_point: u8,
 	}
 
-	#[cfg(feature = "std")]
-	impl<T: Config> Default for GenesisConfig<T> {
-		fn default() -> Self {
-			Self { fee_receiver: None, fee_point: 5 }
-		}
-	}
-
 	#[pallet::genesis_build]
-	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
 		fn build(&self) {
 			<FeeMeta<T>>::put((&self.fee_receiver, &self.fee_point));
-		}
-	}
-
-	#[cfg(feature = "std")]
-	impl<T: Config> GenesisConfig<T> {
-		/// Direct implementation of `GenesisBuild::build_storage`.
-		///
-		/// Kept in order not to break dependency.
-		pub fn build_storage(&self) -> Result<sp_runtime::Storage, String> {
-			<Self as GenesisBuild<T>>::build_storage(self)
-		}
-
-		/// Direct implementation of `GenesisBuild::assimilate_storage`.
-		///
-		/// Kept in order not to break dependency.
-		pub fn assimilate_storage(&self, storage: &mut sp_runtime::Storage) -> Result<(), String> {
-			<Self as GenesisBuild<T>>::assimilate_storage(self, storage)
 		}
 	}
 
@@ -311,7 +285,7 @@ pub mod pallet {
 			AssetBalance,
 			AssetBalance,
 			AssetBalance,
-			T::BlockNumber,
+			BlockNumberFor<T>,
 		),
 
 		/// Claim a bootstrap pair. \[bootstrap_pair_account, claimer, receiver, asset_0, asset_1,
@@ -337,7 +311,7 @@ pub mod pallet {
 			AssetBalance,
 			AssetBalance,
 			AssetBalance,
-			T::BlockNumber,
+			BlockNumberFor<T>,
 		),
 
 		/// Refund from disable bootstrap pair. \[bootstrap_pair_account, caller, asset_0, asset_1,
@@ -491,7 +465,7 @@ pub mod pallet {
 		/// - `target`: The receiver of the foreign.
 		/// - `amount`: The amount of the foreign to transfer.
 		#[pallet::call_index(2)]
-		#[pallet::weight(1_000_000)]
+		#[pallet::weight({1_000_000})]
 		pub fn transfer(
 			origin: OriginFor<T>,
 			asset_id: T::AssetId,
@@ -523,7 +497,7 @@ pub mod pallet {
 			asset_0: T::AssetId,
 			asset_1: T::AssetId,
 		) -> DispatchResult {
-			T::ControlOrigin::ensure_origin(origin)?;
+			ensure_root(origin)?;
 			ensure!(asset_0.is_support() && asset_1.is_support(), Error::<T>::UnsupportedAssetType);
 
 			ensure!(asset_0 != asset_1, Error::<T>::DeniedCreatePair);
@@ -586,7 +560,7 @@ pub mod pallet {
 			#[pallet::compact] amount_1_desired: AssetBalance,
 			#[pallet::compact] amount_0_min: AssetBalance,
 			#[pallet::compact] amount_1_min: AssetBalance,
-			#[pallet::compact] deadline: T::BlockNumber,
+			#[pallet::compact] deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			ensure!(asset_0.is_support() && asset_1.is_support(), Error::<T>::UnsupportedAssetType);
 			let who = ensure_signed(origin)?;
@@ -628,7 +602,7 @@ pub mod pallet {
 			#[pallet::compact] amount_0_min: AssetBalance,
 			#[pallet::compact] amount_1_min: AssetBalance,
 			recipient: <T::Lookup as StaticLookup>::Source,
-			#[pallet::compact] deadline: T::BlockNumber,
+			#[pallet::compact] deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			ensure!(asset_0.is_support() && asset_1.is_support(), Error::<T>::UnsupportedAssetType);
 			let who = ensure_signed(origin)?;
@@ -665,7 +639,7 @@ pub mod pallet {
 			#[pallet::compact] amount_out_min: AssetBalance,
 			path: Vec<T::AssetId>,
 			recipient: <T::Lookup as StaticLookup>::Source,
-			#[pallet::compact] deadline: T::BlockNumber,
+			#[pallet::compact] deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			ensure!(path.iter().all(|id| id.is_support()), Error::<T>::UnsupportedAssetType);
 			let who = ensure_signed(origin)?;
@@ -700,7 +674,7 @@ pub mod pallet {
 			#[pallet::compact] amount_in_max: AssetBalance,
 			path: Vec<T::AssetId>,
 			recipient: <T::Lookup as StaticLookup>::Source,
-			#[pallet::compact] deadline: T::BlockNumber,
+			#[pallet::compact] deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			ensure!(path.iter().all(|id| id.is_support()), Error::<T>::UnsupportedAssetType);
 			let who = ensure_signed(origin)?;
@@ -742,7 +716,7 @@ pub mod pallet {
 			#[pallet::compact] target_supply_1: AssetBalance,
 			#[pallet::compact] capacity_supply_0: AssetBalance,
 			#[pallet::compact] capacity_supply_1: AssetBalance,
-			#[pallet::compact] end: T::BlockNumber,
+			#[pallet::compact] end: BlockNumberFor<T>,
 			rewards: Vec<T::AssetId>,
 			limits: Vec<(T::AssetId, AssetBalance)>,
 		) -> DispatchResult {
@@ -852,7 +826,7 @@ pub mod pallet {
 			asset_1: T::AssetId,
 			#[pallet::compact] amount_0_contribute: AssetBalance,
 			#[pallet::compact] amount_1_contribute: AssetBalance,
-			#[pallet::compact] deadline: T::BlockNumber,
+			#[pallet::compact] deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(who)?;
 
@@ -888,7 +862,7 @@ pub mod pallet {
 			recipient: <T::Lookup as StaticLookup>::Source,
 			asset_0: T::AssetId,
 			asset_1: T::AssetId,
-			#[pallet::compact] deadline: T::BlockNumber,
+			#[pallet::compact] deadline: BlockNumberFor<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let recipient = T::Lookup::lookup(recipient)?;
@@ -944,7 +918,7 @@ pub mod pallet {
 			#[pallet::compact] target_supply_1: AssetBalance,
 			#[pallet::compact] capacity_supply_0: AssetBalance,
 			#[pallet::compact] capacity_supply_1: AssetBalance,
-			#[pallet::compact] end: T::BlockNumber,
+			#[pallet::compact] end: BlockNumberFor<T>,
 			rewards: Vec<T::AssetId>,
 			limits: Vec<(T::AssetId, AssetBalance)>,
 		) -> DispatchResult {
@@ -1028,7 +1002,7 @@ pub mod pallet {
 		}
 
 		#[pallet::call_index(14)]
-		#[pallet::weight(100_000_000)]
+		#[pallet::weight({100_000_000})]
 		#[frame_support::transactional]
 		pub fn bootstrap_charge_reward(
 			origin: OriginFor<T>,
@@ -1062,7 +1036,7 @@ pub mod pallet {
 		}
 
 		#[pallet::call_index(15)]
-		#[pallet::weight(100_000_000)]
+		#[pallet::weight({100_000_000})]
 		#[frame_support::transactional]
 		pub fn bootstrap_withdraw_reward(
 			origin: OriginFor<T>,

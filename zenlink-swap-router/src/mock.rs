@@ -26,8 +26,7 @@ use crate as router;
 use crate::{Config, Pallet};
 use orml_traits::{parameter_type_with_key, MultiCurrency};
 use zenlink_protocol::{
-	AssetBalance, AssetId, LocalAssetHandler, PairLpGenerate, ZenlinkMultiAssets,
-	LOCAL,
+	AssetBalance, AssetId, LocalAssetHandler, PairLpGenerate, ZenlinkMultiAssets, LOCAL,
 };
 use zenlink_stable_amm::traits::{StablePoolLpCurrencyIdGenerate, ValidateCurrency};
 
@@ -219,7 +218,6 @@ impl zenlink_protocol::Config for Test {
 	type TargetChains = ();
 	type SelfParaId = SelfParaId;
 	type WeightInfo = ();
-	type ControlOrigin = frame_system::EnsureRoot<u128>;
 }
 
 impl Config for Test {

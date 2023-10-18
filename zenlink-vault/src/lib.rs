@@ -166,6 +166,7 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
+		#[pallet::call_index(0)]
 		#[pallet::weight(T::WeightInfo::create_vault_asset())]
 		#[transactional]
 		pub fn create_vault_asset(
@@ -216,7 +217,8 @@ pub mod pallet {
 			Ok(())
 		}
 
-		#[pallet::weight(1_000_000)]
+		#[pallet::call_index(1)]
+		#[pallet::weight({1_000_000})]
 		pub fn update_max_penalty_ratio(
 			origin: OriginFor<T>,
 			vault_asset: T::AssetId,
@@ -235,7 +237,8 @@ pub mod pallet {
 			})
 		}
 
-		#[pallet::weight(1_000_000)]
+		#[pallet::call_index(2)]
+		#[pallet::weight({1_000_000})]
 		pub fn update_min_penalty_ratio(
 			origin: OriginFor<T>,
 			vault_asset: T::AssetId,
@@ -256,7 +259,8 @@ pub mod pallet {
 			})
 		}
 
-		#[pallet::weight(1_000_000)]
+		#[pallet::call_index(3)]
+		#[pallet::weight({1_000_000})]
 		pub fn add_asset_locked_accounts(
 			origin: OriginFor<T>,
 			underlying_asset: T::AssetId,
@@ -278,7 +282,8 @@ pub mod pallet {
 			)
 		}
 
-		#[pallet::weight(1_000_000)]
+		#[pallet::call_index(4)]
+		#[pallet::weight({1_000_000})]
 		pub fn remove_asset_locked_accounts(
 			origin: OriginFor<T>,
 			underlying_asset: T::AssetId,
@@ -299,6 +304,7 @@ pub mod pallet {
 			)
 		}
 
+		#[pallet::call_index(5)]
 		#[pallet::weight(T::WeightInfo::deposit())]
 		pub fn deposit(
 			origin: OriginFor<T>,
@@ -312,6 +318,7 @@ pub mod pallet {
 			Ok(())
 		}
 
+		#[pallet::call_index(6)]
 		#[pallet::weight(T::WeightInfo::mint())]
 		pub fn mint(
 			origin: OriginFor<T>,
@@ -325,6 +332,7 @@ pub mod pallet {
 			Ok(())
 		}
 
+		#[pallet::call_index(7)]
 		#[pallet::weight(T::WeightInfo::withdraw())]
 		pub fn withdraw(
 			origin: OriginFor<T>,
@@ -338,6 +346,7 @@ pub mod pallet {
 			Ok(())
 		}
 
+		#[pallet::call_index(8)]
 		#[pallet::weight(T::WeightInfo::redeem())]
 		pub fn redeem(
 			origin: OriginFor<T>,
