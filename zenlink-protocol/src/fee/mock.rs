@@ -5,33 +5,21 @@
 
 use std::marker::PhantomData;
 
-use codec::{Decode, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
-#[cfg(feature = "std")]
-use serde::{Deserialize, Serialize};
-
-use frame_support::{
-	dispatch::{DispatchError, DispatchResult},
-	pallet_prelude::GenesisBuild,
-	parameter_types,
-	traits::Contains,
-	PalletId,
-};
-use orml_traits::{parameter_type_with_key, MultiCurrency};
-use sp_core::H256;
-use sp_runtime::{
-	testing::Header,
-	traits::{BlakeTwo256, IdentityLookup},
-	RuntimeDebug,
-};
-
 use crate as pallet_zenlink;
 pub use crate::{
 	AssetBalance, AssetId, Config, LocalAssetHandler, MultiAssetsHandler, PairLpGenerate, Pallet,
 	ParaId, ZenlinkMultiAssets, LIQUIDITY, LOCAL, NATIVE, RESERVED,
 };
-
-type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
+use codec::{Decode, Encode, MaxEncodedLen};
+use frame_support::{dispatch::DispatchResult, parameter_types, traits::Contains, PalletId};
+use orml_traits::{parameter_type_with_key, MultiCurrency};
+use scale_info::TypeInfo;
+use serde::{Deserialize, Serialize};
+use sp_core::H256;
+use sp_runtime::{
+	traits::{BlakeTwo256, IdentityLookup},
+	BuildStorage, DispatchError, RuntimeDebug,
+};
 type Block = frame_system::mocking::MockBlock<Test>;
 
 #[derive(
@@ -46,23 +34,20 @@ type Block = frame_system::mocking::MockBlock<Test>;
 	PartialOrd,
 	Ord,
 	TypeInfo,
+	Deserialize,
+	Serialize,
 )]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum CurrencyId {
 	Token(u8),
 	ZenlinkLp(u8, u8),
 }
 
 frame_support::construct_runtime!(
-	pub enum Test where
-		Block = Block,
-		NodeBlock = Block,
-		UncheckedExtrinsic = UncheckedExtrinsic,
-	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>} = 0,
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 8,
-		Zenlink: pallet_zenlink::{Pallet, Call, Storage, Event<T>} = 9,
-		Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>} = 11,
+	pub enum Test {
+		System: frame_system = 0,
+		Balances: pallet_balances = 8,
+		Zenlink: pallet_zenlink = 9,
+		Tokens: orml_tokens = 11,
 	}
 );
 
@@ -78,14 +63,13 @@ parameter_types! {
 impl frame_system::Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
 	type RuntimeOrigin = RuntimeOrigin;
-	type Index = u64;
+	type Nonce = u64;
 	type RuntimeCall = RuntimeCall;
-	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type AccountId = u128;
 	type Lookup = IdentityLookup<Self::AccountId>;
-	type Header = Header;
+	type Block = Block;
 	type RuntimeEvent = RuntimeEvent;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
@@ -139,7 +123,7 @@ impl pallet_balances::Config for Test {
 	type MaxLocks = ();
 	type MaxReserves = MaxReserves;
 	type ReserveIdentifier = [u8; 8];
-	type HoldIdentifier = [u8; 8];
+	type RuntimeHoldReason = ();
 	type FreezeIdentifier = [u8; 8];
 	type MaxHolds = ();
 	type MaxFreezes = ();
@@ -159,7 +143,7 @@ impl Config for Test {
 pub type DexPallet = Pallet<Test>;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
-	let mut t = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap().into();
+	let mut t = frame_system::GenesisConfig::<Test>::default().build_storage().unwrap().into();
 	pallet_balances::GenesisConfig::<Test> {
 		balances: vec![
 			(1, 34028236692093846346337460743176821145),

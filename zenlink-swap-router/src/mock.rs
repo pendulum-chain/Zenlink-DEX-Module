@@ -8,18 +8,11 @@ use codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 
-use frame_support::{
-	dispatch::{DispatchError, DispatchResult},
-	pallet_prelude::GenesisBuild,
-	parameter_types,
-	traits::Contains,
-	PalletId,
-};
+use frame_support::{dispatch::DispatchResult, parameter_types, traits::Contains, PalletId};
 use sp_core::H256;
 use sp_runtime::{
-	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup, Zero},
-	RuntimeDebug,
+	BuildStorage, DispatchError, RuntimeDebug,
 };
 
 use crate as router;
@@ -30,7 +23,6 @@ use zenlink_protocol::{
 };
 use zenlink_stable_amm::traits::{StablePoolLpCurrencyIdGenerate, ValidateCurrency};
 
-type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
 parameter_types! {
@@ -129,14 +121,13 @@ pub enum PoolType {
 impl frame_system::Config for Test {
 	type BaseCallFilter = frame_support::traits::Everything;
 	type RuntimeOrigin = RuntimeOrigin;
-	type Index = u64;
+	type Nonce = u64;
+	type Block = Block;
 	type RuntimeCall = RuntimeCall;
-	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
 	type AccountId = u128;
 	type Lookup = IdentityLookup<Self::AccountId>;
-	type Header = Header;
 	type RuntimeEvent = RuntimeEvent;
 	type BlockHashCount = BlockHashCount;
 	type DbWeight = ();
@@ -177,7 +168,7 @@ impl pallet_balances::Config for Test {
 	type MaxLocks = ();
 	type MaxReserves = MaxReserves;
 	type ReserveIdentifier = [u8; 8];
-	type HoldIdentifier = [u8; 8];
+	type RuntimeHoldReason = ();
 	type FreezeIdentifier = [u8; 8];
 	type MaxHolds = ();
 	type MaxFreezes = ();
@@ -334,19 +325,15 @@ where
 }
 
 frame_support::construct_runtime!(
-	pub enum Test where
-		Block = Block,
-		NodeBlock = Block,
-		UncheckedExtrinsic = UncheckedExtrinsic,
-	{
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>} = 0,
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 1,
+	pub enum Test {
+		System: frame_system = 0,
+		Timestamp: pallet_timestamp = 1,
 
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 8,
-		StableAMM: zenlink_stable_amm::{Pallet, Call, Storage, Event<T>} = 9,
-		Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>} = 11,
-		Zenlink: zenlink_protocol::{Pallet, Call, Storage, Event<T>} = 12,
-		Router: router::{Pallet, Call, Event<T>} = 13,
+		Balances: pallet_balances = 8,
+		StableAMM: zenlink_stable_amm = 9,
+		Tokens: orml_tokens = 11,
+		Zenlink: zenlink_protocol = 12,
+		Router: router = 13,
 	}
 );
 
@@ -377,7 +364,7 @@ pub const TOKEN2_ASSET_ID: AssetId =
 	AssetId { chain_id: CHAIN_ID, asset_type: LOCAL, asset_index: 2 };
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
-	let mut t = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap().into();
+	let mut t = frame_system::GenesisConfig::<Test>::default().build_storage().unwrap().into();
 	pallet_balances::GenesisConfig::<Test> { balances: vec![(USER1, u128::MAX)] }
 		.assimilate_storage(&mut t)
 		.unwrap();

@@ -3,8 +3,8 @@
 
 use super::*;
 use scale_info::TypeInfo;
+use serde::{Deserialize, Serialize};
 use sp_std::marker::PhantomData;
-
 pub type AssetBalance = u128;
 
 /// Native currency
@@ -29,8 +29,10 @@ pub const RESERVED: u8 = 3;
 	Ord,
 	TypeInfo,
 	MaxEncodedLen,
+	Serialize,
+	Deserialize,
+	Default,
 )]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize, Default))]
 pub struct AssetId {
 	/// Parachain ID
 	pub chain_id: u32,

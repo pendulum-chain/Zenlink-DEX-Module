@@ -5,14 +5,24 @@
 
 use codec::{Decode, Encode};
 use scale_info;
-#[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
 use super::*;
 
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, PartialOrd, Ord, scale_info::TypeInfo)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "std", serde(rename_all = "camelCase"))]
+#[derive(
+	Encode,
+	Decode,
+	Eq,
+	PartialEq,
+	Copy,
+	Clone,
+	PartialOrd,
+	Ord,
+	scale_info::TypeInfo,
+	Serialize,
+	Deserialize,
+)]
+#[serde(rename_all = "camelCase")]
 pub struct PairInfo<AccountId, AssetBalance, AssetId> {
 	pub asset_0: AssetId,
 	pub asset_1: AssetId,
