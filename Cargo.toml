@@ -4,17 +4,10 @@ panic = 'unwind'
 [workspace]
 members = [
 	"zenlink-protocol",
-	"zenlink-protocol/rpc",
 	"zenlink-protocol/rpc/runtime-api",
 	"zenlink-stable-amm",
-	"zenlink-stable-amm/rpc",
 	"zenlink-stable-amm/rpc/runtime-api",
 	"zenlink-swap-router",
-#	"zenlink-vault",
-#	"zenlink-gauge",
-#	"example/node",
-#	"example/runtime",
-#	"example/primitives"
 ]
 
 resolver = "2"
