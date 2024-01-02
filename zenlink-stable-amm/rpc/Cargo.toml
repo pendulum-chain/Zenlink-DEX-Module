@@ -4,15 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde = { version = "1.0.119", features = ["derive"], optional = true }
-codec = { package = "parity-scale-codec", version = "3.2.2", default-features = false}
+serde = { workspace = true, optional = true }
+codec = { workspace = true }
 
-jsonrpsee = { version = "0.16.2", features = ["server", "macros"] }
+jsonrpsee = { workspace = true }
 
 
-sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
-sp-api = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
-sp-rpc = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
+sp-blockchain = { workspace = true }
+sp-api = { workspace = true }
+sp-rpc = { workspace = true }
+sp-runtime = { workspace = true }
 
-zenlink-stable-amm-runtime-api = { path = "./runtime-api", version = "0.1.0"}
+zenlink-stable-amm-runtime-api = { workspace = true }

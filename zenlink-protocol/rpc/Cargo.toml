@@ -8,21 +8,17 @@ license = "Apache 2.0"
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
-# alias "parity-scale-code" to "codec"
 [dependencies]
-serde = { version = "1.0.119", features = ["derive"], default-features = false }
-codec = { package = "parity-scale-codec", version = "3.2.2", default-features = false }
-
-jsonrpsee = { version = "0.16.2", features = ["server", "macros"] }
+serde = { workspace = true }
+codec = { workspace = true }
+jsonrpsee = { workspace = true }
 
 # Substrate packages
-
-sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
-sp-api = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
-sp-rpc = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
+sp-blockchain = { workspace = true }
+sp-api = { workspace = true }
+sp-rpc = { workspace = true }
+sp-runtime = { workspace = true }
 
 # Local packages
-
-zenlink-protocol = { path = "..", version = "0.4.0"}
-zenlink-protocol-runtime-api = { path = "./runtime-api", version = "0.4.0"}
+zenlink-protocol = { workspace = true }
+zenlink-protocol-runtime-api = { workspace = true }

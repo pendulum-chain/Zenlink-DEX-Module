@@ -4,26 +4,26 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde = { version = "1.0.124", optional = true }
-hex-literal = {version = "0.3.1", optional = true}
-scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
+serde = { workspace = true, optional = true }
+hex-literal = { workspace = true, optional = true}
+scale-info = { workspace = true }
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
 
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false }
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false }
-frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false, optional = true }
+frame-system = { workspace = true }
+frame-support = { workspace = true }
+frame-benchmarking = { workspace = true, optional = true }
 
-sp-core = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false }
-sp-std = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false }
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, optional = true,branch = "release-polkadot-v1.4.0" }
+sp-core = { workspace = true }
+sp-runtime = { workspace = true }
+sp-std = { workspace = true }
+sp-io = { workspace = true, optional = true }
 
-pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false }
+pallet-balances = { workspace = true }
 
-orml-traits = { git = "https://github.com/bifrost-finance/open-runtime-module-library", branch = "release-polkadot-v1.4.0", default-features = false }
+orml-traits = { workspace = true }
 
 [dev-dependencies]
-orml-tokens = { git = "https://github.com/bifrost-finance/open-runtime-module-library", branch = "release-polkadot-v1.4.0", default-features = false }
+orml-tokens = { workspace = true }
 
 [features]
 default = ["std"]

@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.2.2", default-features = false }
-sp-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.4.0", default-features = false }
-sp-std = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, branch = "release-polkadot-v1.4.0" }
+codec = { workspace = true }
+sp-api = { workspace = true }
+sp-std = { workspace = true }
 
-zenlink-stable-amm = { path = '../..', default-features = false }
+zenlink-stable-amm = { workspace = true }
 
 [features]
 default = ["std"]
