@@ -5,7 +5,7 @@
 use std::marker::PhantomData;
 
 use codec::{Decode, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
+use scale_info::{prelude::time::SystemTime, TypeInfo};
 use serde::{Deserialize, Serialize};
 
 use frame_support::{dispatch::DispatchResult, parameter_types, traits::Contains, PalletId};
@@ -169,7 +169,8 @@ impl pallet_balances::Config for Test {
 	type MaxReserves = MaxReserves;
 	type ReserveIdentifier = [u8; 8];
 	type RuntimeHoldReason = ();
-	type FreezeIdentifier = [u8; 8];
+	type RuntimeFreezeReason = ();
+	type FreezeIdentifier = ();
 	type MaxHolds = ();
 	type MaxFreezes = ();
 }
@@ -336,6 +337,18 @@ frame_support::construct_runtime!(
 		Router: router = 13,
 	}
 );
+
+pub fn mine_block() {
+	let now = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
+
+	System::set_block_number(System::block_number() + 1);
+	set_block_timestamp(now);
+}
+
+// timestamp in second
+pub fn set_block_timestamp(timestamp: u64) {
+	Timestamp::set_timestamp(timestamp * 1000);
+}
 
 pub type RouterPallet = Pallet<Test>;
 pub const USER1: u128 = 1;

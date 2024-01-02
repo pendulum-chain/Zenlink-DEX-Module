@@ -99,6 +99,7 @@ fn setup_test_meta_pool() -> (u32, u32) {
 #[test]
 fn create_meta_pool_with_incorrect_parameter_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, base_pool_lp_currency) = setup_test_base_pool();
 
 		// only root can create pool
@@ -207,6 +208,7 @@ fn create_meta_pool_with_incorrect_parameter_should_not_work() {
 #[test]
 fn create_meta_pool_with_parameters_exceed_threshold_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		// exceed max swap fee
 		let (_, base_lp_currency) = setup_test_base_pool();
 		assert_noop!(
@@ -279,6 +281,7 @@ fn create_meta_pool_with_parameters_exceed_threshold_should_not_work() {
 #[test]
 fn create_meta_pool_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, base_pool_lp_currency) = setup_test_base_pool();
 		let meta_pool_lp_currency = CurrencyId::StableLPV2(1);
 		assert_eq!(StableAmm::lp_currencies(meta_pool_lp_currency), None);
@@ -357,6 +360,7 @@ fn create_meta_pool_should_work() {
 #[test]
 fn add_liquidity_with_incorrect_params_in_meta_pool_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, base_pool_lp_currency) = setup_test_base_pool();
 
 		assert_ok!(StableAmm::create_meta_pool(
@@ -432,6 +436,7 @@ fn add_liquidity_when_withdraw_more_than_available_in_meta_pool_should_fail() {
 #[test]
 fn add_liquidity_with_expected_lp_amount_in_meta_pool_should_success() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_test_meta_pool();
 		let meta_pool_id = 1;
 		let calculated_pool_token_amount = StableAmm::calculate_currency_amount(
@@ -459,6 +464,7 @@ fn add_liquidity_with_expected_lp_amount_in_meta_pool_should_success() {
 #[test]
 fn add_liquidity_when_lp_token_amount_has_small_slippage_in_meta_pool_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_test_meta_pool();
 		let meta_pool_id = 1;
 		let calculated_pool_token_amount = StableAmm::calculate_currency_amount(
@@ -491,6 +497,7 @@ fn add_liquidity_when_lp_token_amount_has_small_slippage_in_meta_pool_should_wor
 #[test]
 fn add_liquidity_in_meta_pool_update_pool_balances_should_correct() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_test_meta_pool();
 		let meta_pool_id = 1;
 		assert_ok!(StableAmm::add_liquidity(
@@ -515,6 +522,7 @@ fn add_liquidity_in_meta_pool_update_pool_balances_should_correct() {
 #[test]
 fn add_liquidity_in_meta_pool_when_mint_amount_not_reach_due_to_front_running_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_test_meta_pool();
 		let meta_pool_id = 1;
 
@@ -553,6 +561,7 @@ fn add_liquidity_in_meta_pool_when_mint_amount_not_reach_due_to_front_running_sh
 #[test]
 fn add_liquidity_in_meta_pool_when_block_expired_should_revert() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_test_meta_pool();
 		let meta_pool_id = 1;
 
@@ -574,6 +583,7 @@ fn add_liquidity_in_meta_pool_when_block_expired_should_revert() {
 #[test]
 fn remove_liquidity_in_meta_pool_exceed_total_supply_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_test_meta_pool();
 		let meta_pool_id = 1;
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
@@ -584,6 +594,7 @@ fn remove_liquidity_in_meta_pool_exceed_total_supply_should_not_work() {
 #[test]
 fn remove_liquidity_in_meta_pool_with_incorrect_min_amounts_length_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_noop!(
 			StableAmm::remove_liquidity(
@@ -602,6 +613,7 @@ fn remove_liquidity_in_meta_pool_with_incorrect_min_amounts_length_should_not_wo
 #[test]
 fn remove_liquidity_in_meta_pool_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -643,6 +655,7 @@ fn remove_liquidity_in_meta_pool_should_work() {
 #[test]
 fn remove_liquidity_in_meta_pool_with_expected_return_amount_underlying_currency_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -689,6 +702,7 @@ fn remove_liquidity_in_meta_pool_with_expected_return_amount_underlying_currency
 #[test]
 fn remove_liquidity_in_meta_pool_exceed_own_lp_tokens_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -722,6 +736,7 @@ fn remove_liquidity_in_meta_pool_exceed_own_lp_tokens_should_not_work() {
 fn remove_liquidity_in_meta_pool_when_min_amounts_not_reached_due_to_front_running_should_not_work()
 {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -769,6 +784,7 @@ fn remove_liquidity_in_meta_pool_when_min_amounts_not_reached_due_to_front_runni
 #[test]
 fn remove_liquidity_in_meta_pool_with_expired_deadline_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -801,6 +817,7 @@ fn remove_liquidity_in_meta_pool_with_expired_deadline_should_not_work() {
 #[test]
 fn remove_liquidity_imbalance_in_meta_pool_with_mismatch_amounts_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_noop!(
 			StableAmm::remove_liquidity_imbalance(
@@ -819,6 +836,7 @@ fn remove_liquidity_imbalance_in_meta_pool_with_mismatch_amounts_should_not_work
 #[test]
 fn remove_liquidity_imbalance_in_meta_pool_when_withdraw_more_than_available_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_noop!(
 			StableAmm::remove_liquidity_imbalance(
@@ -837,6 +855,7 @@ fn remove_liquidity_imbalance_in_meta_pool_when_withdraw_more_than_available_sho
 #[test]
 fn remove_liquidity_imbalance_in_meta_pool_with_max_burn_lp_token_amount_range_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -893,6 +912,7 @@ fn remove_liquidity_imbalance_in_meta_pool_with_max_burn_lp_token_amount_range_s
 #[test]
 fn remove_liquidity_imbalance_in_meta_pool_exceed_own_lp_token_amount_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -926,6 +946,7 @@ fn remove_liquidity_imbalance_in_meta_pool_exceed_own_lp_token_amount_should_not
 fn remove_liquidity_imbalance_in_meta_pool_when_min_amounts_of_underlying_tokens_not_reached_should_not_work(
 ) {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_ok!(StableAmm::add_liquidity(
 			RawOrigin::Signed(BOB).into(),
@@ -972,6 +993,7 @@ fn remove_liquidity_imbalance_in_meta_pool_when_min_amounts_of_underlying_tokens
 #[test]
 fn remove_liquidity_imbalance_in_meta_pool_with_expired_deadline_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -1003,6 +1025,7 @@ fn remove_liquidity_imbalance_in_meta_pool_with_expired_deadline_should_not_work
 #[test]
 fn remove_liquidity_one_currency_in_meta_pool_with_currency_index_out_range_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_eq!(
 			StableAmm::stable_amm_calculate_remove_liquidity_one_currency(meta_pool_id, 1, 5),
@@ -1014,6 +1037,7 @@ fn remove_liquidity_one_currency_in_meta_pool_with_currency_index_out_range_shou
 #[test]
 fn remove_liquidity_one_currency_calculation_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -1044,6 +1068,7 @@ fn remove_liquidity_one_currency_calculation_should_work() {
 #[test]
 fn remove_liquidity_one_currency_calculated_amount_as_min_amount_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -1088,6 +1113,7 @@ fn remove_liquidity_one_currency_calculated_amount_as_min_amount_should_work() {
 #[test]
 fn remove_liquidity_one_currency_with_lp_token_amount_exceed_own_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -1122,6 +1148,7 @@ fn remove_liquidity_one_currency_with_lp_token_amount_exceed_own_should_work() {
 fn remove_liquidity_one_currency_with_min_amount_not_reached_due_to_front_running_should_not_work()
 {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -1173,6 +1200,7 @@ fn remove_liquidity_one_currency_with_min_amount_not_reached_due_to_front_runnin
 #[test]
 fn remove_liquidity_one_currency_with_expired_deadline_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -1207,6 +1235,7 @@ fn remove_liquidity_one_currency_with_expired_deadline_should_not_work() {
 #[test]
 fn swap_with_currency_index_out_of_index_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(
@@ -1219,6 +1248,7 @@ fn swap_with_currency_index_out_of_index_should_not_work() {
 #[test]
 fn swap_with_currency_amount_exceed_own_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_noop!(
 			StableAmm::swap(
@@ -1239,6 +1269,7 @@ fn swap_with_currency_amount_exceed_own_should_not_work() {
 #[test]
 fn swap_with_expected_amounts_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -1272,6 +1303,7 @@ fn swap_with_expected_amounts_should_work() {
 #[test]
 fn swap_when_min_amount_receive_not_reached_due_to_front_running_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let calculated_swap_return =
 			StableAmm::stable_amm_calculate_swap_amount(meta_pool_id, 0, 1, 1e17 as Balance)
@@ -1309,6 +1341,7 @@ fn swap_when_min_amount_receive_not_reached_due_to_front_running_should_not_work
 #[test]
 fn swap_with_lower_min_dy_when_transaction_is_front_ran_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
@@ -1362,6 +1395,7 @@ fn swap_with_lower_min_dy_when_transaction_is_front_ran_should_work() {
 #[test]
 fn swap_with_expired_deadline_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		System::set_block_number(100);
@@ -1385,6 +1419,7 @@ fn swap_with_expired_deadline_should_not_work() {
 #[test]
 fn swap_underlying_with_token_index_out_range_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_noop!(
@@ -1406,6 +1441,7 @@ fn swap_underlying_with_token_index_out_range_should_not_work() {
 #[test]
 fn swap_underlying_from_meta_to_base_between_same_decimal_token_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 		let meta_pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		let base_pool = StableAmm::pools(base_pool_id).unwrap().get_pool_info();
@@ -1456,6 +1492,7 @@ fn swap_underlying_from_meta_to_base_between_same_decimal_token_should_work() {
 #[test]
 fn swap_underlying_from_base_to_meta_between_different_decimal_token_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 		let meta_pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		let base_pool = StableAmm::pools(base_pool_id).unwrap().get_pool_info();
@@ -1506,6 +1543,7 @@ fn swap_underlying_from_base_to_meta_between_different_decimal_token_should_work
 #[test]
 fn swap_underlying_from_base_to_base_between_different_decimal_token_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 		let meta_pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		let base_pool = StableAmm::pools(base_pool_id).unwrap().get_pool_info();
@@ -1552,12 +1590,15 @@ fn swap_underlying_from_base_to_base_between_different_decimal_token_should_work
 
 #[test]
 fn swap_underlying_from_meta_to_meta_should_work() {
-	new_test_ext().execute_with(|| {})
+	new_test_ext().execute_with(|| {
+		mine_block();
+	})
 }
 
 #[test]
 fn swap_underlying_not_reach_min_dy_due_to_front_running_should_revert() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		let calculated_swap_return =
@@ -1595,6 +1636,7 @@ fn swap_underlying_not_reach_min_dy_due_to_front_running_should_revert() {
 #[test]
 fn swap_underlying_with_lower_min_dy_after_front_running_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		let calculated_swap_return =
@@ -1644,6 +1686,7 @@ fn swap_underlying_with_lower_min_dy_after_front_running_should_work() {
 #[test]
 fn swap_underlying_with_expired_block_should_revert() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		System::set_block_number(100);
 		assert_noop!(
@@ -1665,6 +1708,7 @@ fn swap_underlying_with_expired_block_should_revert() {
 #[test]
 fn get_meta_virtual_price_after_first_deposit_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		let meta_virtual_price = StableAmm::get_virtual_price(meta_pool_id);
@@ -1676,6 +1720,7 @@ fn get_meta_virtual_price_after_first_deposit_should_work() {
 #[test]
 fn get_meta_virtual_price_after_swap_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::swap(
@@ -1708,6 +1753,7 @@ fn get_meta_virtual_price_after_swap_should_work() {
 #[test]
 fn get_expected_meta_virtual_price_after_imbalance_withdrawal_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -1757,6 +1803,7 @@ fn get_expected_meta_virtual_price_after_imbalance_withdrawal_should_work() {
 #[test]
 fn meta_virtual_price_unchanged_after_balanced_deposit_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(StableAmm::get_virtual_price(meta_pool_id), 1e18 as Balance);
@@ -1801,6 +1848,7 @@ fn meta_virtual_price_unchanged_after_balanced_deposit_should_work() {
 #[test]
 fn meta_virtual_price_unchanged_after_balanced_withdrawal_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(StableAmm::get_virtual_price(meta_pool_id), 1e18 as Balance);
@@ -1832,6 +1880,7 @@ fn meta_virtual_price_unchanged_after_balanced_withdrawal_should_work() {
 #[test]
 fn set_meta_fee_with_no_admin_should_revert() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_noop!(
 			StableAmm::set_swap_fee(
@@ -1847,6 +1896,7 @@ fn set_meta_fee_with_no_admin_should_revert() {
 #[test]
 fn set_meta_fee_in_limit_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_ok!(StableAmm::set_swap_fee(RawOrigin::Root.into(), meta_pool_id, 1e8 as Balance,),);
 		let meta_pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
@@ -1857,6 +1907,7 @@ fn set_meta_fee_in_limit_should_work() {
 #[test]
 fn set_meta_admin_fee_with_no_admin_should_revert() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_noop!(
 			StableAmm::set_admin_fee(
@@ -1872,6 +1923,7 @@ fn set_meta_admin_fee_with_no_admin_should_revert() {
 #[test]
 fn set_meta_admin_fee_exceed_limit_should_revert() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_noop!(
 			StableAmm::set_admin_fee(RawOrigin::Root.into(), meta_pool_id, (1e10 as Balance) + 1),
@@ -1883,6 +1935,7 @@ fn set_meta_admin_fee_exceed_limit_should_revert() {
 #[test]
 fn set_meta_admin_fee_in_limit_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_ok!(StableAmm::set_admin_fee(RawOrigin::Root.into(), meta_pool_id, 1e10 as Balance),);
 
@@ -1894,6 +1947,7 @@ fn set_meta_admin_fee_in_limit_should_work() {
 #[test]
 fn get_meta_admin_balance_with_out_of_range_index_should_revert() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		assert_eq!(StableAmm::get_admin_balance(meta_pool_id, 3), None);
 	})
@@ -1902,6 +1956,7 @@ fn get_meta_admin_balance_with_out_of_range_index_should_revert() {
 #[test]
 fn get_meta_admin_balance_is_zero_with_zero_admin_fee_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(StableAmm::get_admin_balance(meta_pool_id, 0), Some(0));
@@ -1926,6 +1981,7 @@ fn get_meta_admin_balance_is_zero_with_zero_admin_fee_should_work() {
 #[test]
 fn get_expected_admin_balance_after_set_admin_fee_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(StableAmm::get_admin_balance(meta_pool_id, 0), Some(0));
@@ -1963,6 +2019,7 @@ fn get_expected_admin_balance_after_set_admin_fee_should_work() {
 #[test]
 fn get_expected_admin_balance_after_remove_one_currency_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(StableAmm::get_admin_balance(meta_pool_id, 0), Some(0));
@@ -2001,6 +2058,7 @@ fn get_expected_admin_balance_after_remove_one_currency_should_work() {
 #[test]
 fn get_expected_admin_balance_after_remove_imbalance_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(StableAmm::get_admin_balance(meta_pool_id, 0), Some(0));
@@ -2037,6 +2095,7 @@ fn get_expected_admin_balance_after_remove_imbalance_should_work() {
 #[test]
 fn get_expected_admin_balance_after_add_liquidity_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_eq!(StableAmm::get_admin_balance(meta_pool_id, 0), Some(0));
@@ -2072,6 +2131,7 @@ fn get_expected_admin_balance_after_add_liquidity_should_work() {
 #[test]
 fn withdraw_admin_balance_with_zero_admin_fee_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		let meta_pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
@@ -2091,6 +2151,7 @@ fn withdraw_admin_balance_with_zero_admin_fee_should_work() {
 #[test]
 fn withdraw_admin_balance_with_expected_amount_after_swap_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::set_admin_fee(RawOrigin::Root.into(), meta_pool_id, 1e8 as Balance));
@@ -2137,6 +2198,7 @@ fn withdraw_admin_balance_with_expected_amount_after_swap_should_work() {
 #[test]
 fn withdraw_admin_balance_with_expected_amount_after_swap_underlying_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::set_admin_fee(RawOrigin::Root.into(), meta_pool_id, 1e8 as Balance));
@@ -2184,6 +2246,7 @@ fn withdraw_admin_balance_with_expected_amount_after_swap_underlying_should_work
 #[test]
 fn withdraw_admin_balance_has_no_impact_on_user_withdrawal_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::set_admin_fee(RawOrigin::Root.into(), meta_pool_id, 1e8 as Balance));
@@ -2252,6 +2315,7 @@ fn withdraw_admin_balance_has_no_impact_on_user_withdrawal_should_work() {
 #[test]
 fn ramp_meta_a_upwards_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		mine_block();
@@ -2295,6 +2359,7 @@ fn ramp_meta_a_upwards_should_work() {
 #[test]
 fn ramp_meta_a_downward_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		mine_block();
@@ -2339,6 +2404,7 @@ fn ramp_meta_a_downward_should_work() {
 #[test]
 fn ramp_meta_a_with_non_owner_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		mine_block();
@@ -2359,6 +2425,7 @@ fn ramp_meta_a_with_non_owner_should_not_work() {
 #[test]
 fn ramp_meta_a_not_delay_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		mine_block();
 
@@ -2380,6 +2447,7 @@ fn ramp_meta_a_not_delay_should_not_work() {
 #[test]
 fn ramp_meta_a_out_of_range_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		mine_block();
 
@@ -2400,6 +2468,7 @@ fn ramp_meta_a_out_of_range_should_not_work() {
 #[test]
 fn stop_ramp_meta_a_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		mine_block();
 
@@ -2429,6 +2498,7 @@ fn stop_ramp_meta_a_should_work() {
 #[test]
 fn stop_ramp_meta_a_repeat_should_not_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		mine_block();
 
@@ -2460,6 +2530,7 @@ fn stop_ramp_meta_a_repeat_should_not_work() {
 fn meta_pool_check_maximum_differences_in_a_and_virtual_price_when_time_manipulations_and_increasing_a(
 ) {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		mine_block();
 
 		let (_, meta_pool_id) = setup_test_meta_pool();
@@ -2498,6 +2569,7 @@ fn meta_pool_check_maximum_differences_in_a_and_virtual_price_when_time_manipula
 fn meta_check_maximum_differences_in_a_and_virtual_price_when_time_manipulations_and_decreasing_a()
 {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		mine_block();
 
 		let (_, meta_pool_id) = setup_test_meta_pool();
@@ -2579,6 +2651,8 @@ fn prepare_attack_meta_context(new_a: Balance) -> AttackContext {
 #[test]
 fn check_when_ramp_a_upwards_and_tokens_price_equally() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let context = prepare_attack_meta_context(100);
 
 		// Swap 1e18 of firstToken to secondToken, causing massive imbalance in the pool
@@ -2653,6 +2727,8 @@ fn check_when_ramp_a_upwards_and_tokens_price_equally() {
 #[test]
 fn meta_check_when_ramp_a_upwards_and_tokens_price_unequally() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let mut context = prepare_attack_meta_context(100);
 
 		// Set up pool to be imbalanced prior to the attack
@@ -2743,6 +2819,8 @@ fn meta_check_when_ramp_a_upwards_and_tokens_price_unequally() {
 #[test]
 fn meta_check_when_ramp_a_downwards_and_tokens_price_equally() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let context = prepare_attack_meta_context(25);
 		// Swap 1e18 of firstToken to secondToken, causing massive imbalance in the pool
 		assert_ok!(StableAmm::swap(
@@ -2816,6 +2894,8 @@ fn meta_check_when_ramp_a_downwards_and_tokens_price_equally() {
 #[test]
 fn meta_check_when_ramp_a_downwards_and_tokens_price_unequally() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let mut context = prepare_attack_meta_context(25);
 
 		// Set up pool to be imbalanced prior to the attack
@@ -2906,6 +2986,8 @@ fn meta_check_when_ramp_a_downwards_and_tokens_price_unequally() {
 #[test]
 fn meta_check_arithmetic_in_add_liquidity_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
@@ -2968,6 +3050,8 @@ fn meta_check_arithmetic_in_add_liquidity_should_successfully() {
 #[test]
 fn meta_check_arithmetic_in_remove_liquidity_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 
@@ -3078,6 +3162,8 @@ fn meta_check_arithmetic_in_remove_liquidity_should_successfully() {
 #[test]
 fn meta_check_arithmetic_in_remove_liquidity_one_currency_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3182,6 +3268,9 @@ fn meta_check_arithmetic_in_remove_liquidity_one_currency_should_successfully() 
 #[test]
 fn meta_check_arithmetic_in_remove_liquidity_imbalance_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
+
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3293,6 +3382,8 @@ fn meta_check_arithmetic_in_remove_liquidity_imbalance_should_successfully() {
 #[test]
 fn meta_check_arithmetic_in_swap_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3418,6 +3509,8 @@ fn meta_check_arithmetic_in_swap_should_successfully() {
 #[test]
 fn meta_check_arithmetic_in_add_liquidity_with_admin_fee_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3467,6 +3560,8 @@ fn meta_check_arithmetic_in_add_liquidity_with_admin_fee_should_successfully() {
 #[test]
 fn meta_check_arithmetic_in_remove_liquidity_with_admin_fee_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3540,6 +3635,8 @@ fn meta_check_arithmetic_in_remove_liquidity_with_admin_fee_should_successfully(
 #[test]
 fn meta_check_arithmetic_in_remove_liquidity_one_currency_with_admin_fee_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3618,6 +3715,7 @@ fn meta_check_arithmetic_in_remove_liquidity_one_currency_with_admin_fee_should_
 #[test]
 fn meta_check_arithmetic_in_remove_liquidity_imbalance_with_admin_fee_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (_, meta_pool_id) = setup_test_meta_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3694,6 +3792,7 @@ fn meta_check_arithmetic_in_remove_liquidity_imbalance_with_admin_fee_should_suc
 #[test]
 fn meta_check_arithmetic_in_swap_imbalance_with_admin_fee_should_successfully() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (meta_pool_id, _) = setup_test_base_pool();
 		let pool = StableAmm::pools(meta_pool_id).unwrap().get_pool_info();
 		mint_more_currencies(
@@ -3769,6 +3868,7 @@ fn meta_check_arithmetic_in_swap_imbalance_with_admin_fee_should_successfully() 
 #[test]
 fn add_pool_and_base_pool_liquidity_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (basic_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		// remove all initial lp balance.
@@ -3811,6 +3911,7 @@ fn add_pool_and_base_pool_liquidity_should_work() {
 #[test]
 fn remove_pool_and_base_pool_liquidity_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		create_mock_base_pool();
 
 		let base_pool_id = 0;
@@ -3873,6 +3974,7 @@ fn remove_pool_and_base_pool_liquidity_should_work() {
 #[test]
 fn remove_pool_and_base_pool_liquidity_one_currency_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		assert_ok!(StableAmm::create_base_pool(
 			RawOrigin::Root.into(),
 			vec![Token(TOKEN1_SYMBOL), Token(TOKEN2_SYMBOL), Token(TOKEN3_SYMBOL)],
@@ -3956,6 +4058,7 @@ fn remove_pool_and_base_pool_liquidity_one_currency_should_work() {
 #[test]
 fn swap_pool_from_base_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		assert_ok!(StableAmm::create_base_pool(
 			RawOrigin::Root.into(),
 			vec![Token(TOKEN1_SYMBOL), Token(TOKEN2_SYMBOL), Token(TOKEN3_SYMBOL)],
@@ -4039,6 +4142,7 @@ fn swap_pool_from_base_should_work() {
 #[test]
 fn swap_pool_to_base_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		assert_ok!(StableAmm::create_base_pool(
 			RawOrigin::Root.into(),
 			vec![Token(TOKEN1_SYMBOL), Token(TOKEN2_SYMBOL), Token(TOKEN3_SYMBOL)],
@@ -4121,6 +4225,7 @@ fn swap_pool_to_base_should_work() {
 #[test]
 fn get_meta_virtual_price_impact_on_base_pool_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 		assert_eq!(StableAmm::get_virtual_price(base_pool_id), 1e18 as Balance);
 
@@ -4144,6 +4249,7 @@ fn get_meta_virtual_price_impact_on_base_pool_should_work() {
 #[test]
 fn meta_pool_add_liquidity_impact_on_base_pool_price_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -4180,6 +4286,7 @@ fn meta_pool_add_liquidity_impact_on_base_pool_price_should_work() {
 #[test]
 fn meta_pool_remove_liquidity_impact_on_base_pool_price_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -4224,6 +4331,7 @@ fn meta_pool_remove_liquidity_impact_on_base_pool_price_should_work() {
 #[test]
 fn meta_pool_remove_liquidity_one_currency_impact_on_base_pool_price_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -4267,6 +4375,7 @@ fn meta_pool_remove_liquidity_one_currency_impact_on_base_pool_price_should_work
 #[test]
 fn meta_pool_remove_liquidity_imbalance_impact_on_base_pool_price_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -4317,6 +4426,7 @@ fn meta_pool_remove_liquidity_imbalance_impact_on_base_pool_price_should_work() 
 #[test]
 fn meta_pool_swap_impact_on_base_pool_price_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(
@@ -4368,6 +4478,7 @@ fn meta_pool_swap_impact_on_base_pool_price_should_work() {
 #[test]
 fn meta_pool_swap_underlying_impact_on_base_pool_price_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		let (base_pool_id, meta_pool_id) = setup_test_meta_pool();
 
 		assert_ok!(StableAmm::add_liquidity(

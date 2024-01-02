@@ -168,7 +168,8 @@ impl pallet_balances::Config for Test {
 	type MaxReserves = MaxReserves;
 	type ReserveIdentifier = [u8; 8];
 	type RuntimeHoldReason = ();
-	type FreezeIdentifier = [u8; 8];
+	type RuntimeFreezeReason = ();
+	type FreezeIdentifier = ();
 	type MaxHolds = ();
 	type MaxFreezes = ();
 }
@@ -234,11 +235,11 @@ where
 
 frame_support::construct_runtime!(
 	pub enum Test {
-		System: frame_system = 0,
-		Timestamp: pallet_timestamp = 1,
-		Balances: pallet_balances = 8,
-		StableAMM: stable_amm = 9,
-		Tokens: orml_tokens = 11,
+		System: frame_system,
+		Timestamp: pallet_timestamp,
+		Balances: pallet_balances,
+		StableAMM: stable_amm,
+		Tokens: orml_tokens,
 	}
 );
 

@@ -124,7 +124,8 @@ impl pallet_balances::Config for Test {
 	type MaxReserves = MaxReserves;
 	type ReserveIdentifier = [u8; 8];
 	type RuntimeHoldReason = ();
-	type FreezeIdentifier = [u8; 8];
+	type RuntimeFreezeReason = ();
+	type FreezeIdentifier = ();
 	type MaxHolds = ();
 	type MaxFreezes = ();
 }

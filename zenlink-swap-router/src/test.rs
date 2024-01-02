@@ -75,6 +75,7 @@ fn setup_pools() {
 #[test]
 fn swap_exact_token_for_tokens_through_stable_pool_with_amount_slippage_should_failed() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_stable_pools();
 		setup_pools();
 
@@ -106,6 +107,7 @@ fn swap_exact_token_for_tokens_through_stable_pool_with_amount_slippage_should_f
 #[test]
 fn swap_exact_token_for_tokens_through_stable_pool_should_work() {
 	new_test_ext().execute_with(|| {
+		mine_block();
 		setup_stable_pools();
 		setup_pools();
 

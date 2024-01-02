@@ -5,12 +5,12 @@
 use super::*;
 use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
+use sp_runtime::BuildStorage;
 
 use crate::mock::TokenSymbol::*;
 use frame_support::{construct_runtime, parameter_types, traits::Contains};
 use orml_traits::parameter_type_with_key;
 use sp_runtime::{
-	testing::Header,
 	traits::{IdentifyAccount, IdentityLookup, Verify},
 	AccountId32, MultiSignature,
 };
@@ -74,6 +74,7 @@ parameter_type_with_key! {
 pub(crate) const CURRENCY_TEST1: CurrencyId = CurrencyId::Token(TokenSymbol::Test1);
 
 type Balance = u128;
+type Block = frame_system::mocking::MockBlock<Runtime>;
 
 pub type Signature = MultiSignature;
 pub type AccountPublic = <Signature as Verify>::Signer;
@@ -84,14 +85,13 @@ pub const BOB: AccountId = AccountId32::new([1u8; 32]);
 
 impl frame_system::Config for Runtime {
 	type RuntimeOrigin = RuntimeOrigin;
-	type Index = u64;
-	type BlockNumber = u64;
+	type Nonce = u64;
+	type Block = Block;
 	type RuntimeCall = RuntimeCall;
 	type Hash = H256;
 	type Hashing = ::sp_runtime::traits::BlakeTwo256;
 	type AccountId = AccountId;
 	type Lookup = IdentityLookup<Self::AccountId>;
-	type Header = Header;
 	type RuntimeEvent = RuntimeEvent;
 	type BlockHashCount = BlockHashCount;
 	type BlockWeights = ();
@@ -106,7 +106,7 @@ impl frame_system::Config for Runtime {
 	type SystemWeightInfo = ();
 	type SS58Prefix = ();
 	type OnSetCode = ();
-	type MaxConsumers = frame_support::traits::ConstU32<16>;
+	type MaxConsumers = ConstU32<16>;
 }
 
 pub struct DustRemovalWhitelist;
@@ -141,8 +141,9 @@ impl pallet_balances::Config for Runtime {
 	type MaxLocks = ();
 	type MaxReserves = MaxReserves;
 	type ReserveIdentifier = [u8; 8];
-	type HoldIdentifier = [u8; 8];
-	type FreezeIdentifier = [u8; 8];
+	type RuntimeHoldReason = ();
+	type RuntimeFreezeReason = ();
+	type FreezeIdentifier = ();
 	type MaxHolds = ();
 	type MaxFreezes = ();
 }
@@ -158,19 +159,12 @@ impl Config for Runtime {
 	type WeightInfo = ();
 }
 
-type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Runtime>;
-type Block = frame_system::mocking::MockBlock<Runtime>;
-
 construct_runtime!(
-	pub enum Runtime where
-		Block = Block,
-		NodeBlock = Block,
-		UncheckedExtrinsic = UncheckedExtrinsic,
-	{
-		System: frame_system::{Pallet, Call, Storage, Config, Event<T>},
-		MerkleDistributor: merkle_distributor::{Pallet, Storage, Call, Event<T>},
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
+	pub enum Runtime {
+		System: frame_system,
+		MerkleDistributor: merkle_distributor,
+		Balances: pallet_balances,
+		Tokens: orml_tokens,
 	}
 );
 
@@ -179,8 +173,8 @@ pub type MdPallet = Pallet<Runtime>;
 pub(crate) const UNIT: Balance = 1_000_000_000_000;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
-	let mut t = frame_system::GenesisConfig::default()
-		.build_storage::<Runtime>()
+	let mut t = frame_system::GenesisConfig::<Runtime>::default()
+		.build_storage()
 		.unwrap()
 		.into();
 	pallet_balances::GenesisConfig::<Runtime> {
