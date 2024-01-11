@@ -7,7 +7,7 @@ edition = "2021"
 serde = { workspace = true, optional = true }
 hex-literal = { workspace = true, optional = true}
 scale-info = { workspace = true }
-codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+codec = { workspace = true, features = ["derive"] }
 
 frame-system = { workspace = true }
 frame-support = { workspace = true }
