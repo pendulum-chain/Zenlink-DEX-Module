@@ -8,10 +8,10 @@ use serde::{Deserialize, Serialize};
 use sp_runtime::BuildStorage;
 
 use crate::mock::TokenSymbol::*;
-use frame_support::{construct_runtime, parameter_types, traits::Contains};
+use frame_support::{construct_runtime, derive_impl, parameter_types, traits::Contains};
 use orml_traits::parameter_type_with_key;
 use sp_runtime::{
-	traits::{IdentifyAccount, IdentityLookup, Verify},
+	traits::{IdentifyAccount, Verify},
 	AccountId32, MultiSignature,
 };
 
@@ -83,30 +83,12 @@ pub type AccountId = <AccountPublic as IdentifyAccount>::AccountId;
 pub const ALICE: AccountId = AccountId32::new([0u8; 32]);
 pub const BOB: AccountId = AccountId32::new([1u8; 32]);
 
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Runtime {
-	type RuntimeOrigin = RuntimeOrigin;
-	type Nonce = u64;
-	type Block = Block;
-	type RuntimeCall = RuntimeCall;
-	type Hash = H256;
-	type Hashing = ::sp_runtime::traits::BlakeTwo256;
 	type AccountId = AccountId;
-	type Lookup = IdentityLookup<Self::AccountId>;
-	type RuntimeEvent = RuntimeEvent;
-	type BlockHashCount = BlockHashCount;
-	type BlockWeights = ();
-	type BlockLength = ();
-	type Version = ();
-	type PalletInfo = PalletInfo;
-	type AccountData = pallet_balances::AccountData<Balance>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
-	type DbWeight = ();
-	type BaseCallFilter = frame_support::traits::Everything;
-	type SystemWeightInfo = ();
-	type SS58Prefix = ();
-	type OnSetCode = ();
-	type MaxConsumers = ConstU32<16>;
+	type Lookup = sp_runtime::traits::IdentityLookup<Self::AccountId>;
+	type Block = Block;
+	type AccountData = pallet_balances::AccountData<u128>;
 }
 
 pub struct DustRemovalWhitelist;

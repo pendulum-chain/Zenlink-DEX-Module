@@ -7,14 +7,12 @@
 use std::marker::PhantomData;
 
 use codec::{Decode, Encode, MaxEncodedLen};
-use frame_support::{dispatch::DispatchResult, parameter_types, traits::Contains, PalletId};
+use frame_support::{
+	derive_impl, dispatch::DispatchResult, parameter_types, traits::Contains, PalletId,
+};
 use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
-use sp_core::H256;
-use sp_runtime::{
-	traits::{BlakeTwo256, IdentityLookup},
-	BuildStorage, DispatchError, RuntimeDebug,
-};
+use sp_runtime::{BuildStorage, DispatchError, RuntimeDebug};
 
 use crate as pallet_zenlink;
 pub use crate::{
@@ -62,30 +60,12 @@ parameter_types! {
 	pub const MaxLocks:u32 = 50;
 }
 
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Test {
-	type BaseCallFilter = frame_support::traits::Everything;
-	type RuntimeOrigin = RuntimeOrigin;
-	type Nonce = u64;
+	type AccountId = AccountId;
+	type Lookup = sp_runtime::traits::IdentityLookup<Self::AccountId>;
 	type Block = Block;
-	type RuntimeCall = RuntimeCall;
-	type Hash = H256;
-	type Hashing = BlakeTwo256;
-	type AccountId = u128;
-	type Lookup = IdentityLookup<Self::AccountId>;
-	type RuntimeEvent = RuntimeEvent;
-	type BlockHashCount = BlockHashCount;
-	type DbWeight = ();
-	type Version = ();
 	type AccountData = pallet_balances::AccountData<u128>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
-	type SystemWeightInfo = ();
-	type PalletInfo = PalletInfo;
-	type BlockWeights = ();
-	type BlockLength = ();
-	type SS58Prefix = ();
-	type OnSetCode = ();
-	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
 parameter_type_with_key! {

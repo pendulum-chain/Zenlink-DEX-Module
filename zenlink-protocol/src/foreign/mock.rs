@@ -2,12 +2,8 @@
 // Licensed under Apache 2.0.
 
 //! Test utilities
-use frame_support::{parameter_types, PalletId};
-use sp_core::H256;
-use sp_runtime::{
-	traits::{BlakeTwo256, IdentityLookup},
-	BuildStorage,
-};
+use frame_support::{derive_impl, parameter_types, PalletId};
+use sp_runtime::BuildStorage;
 
 use crate as pallet_zenlink;
 pub use crate::{
@@ -32,30 +28,12 @@ parameter_types! {
 	pub const MaxReserves: u32 = 50;
 }
 
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Test {
-	type BaseCallFilter = frame_support::traits::Everything;
-	type RuntimeOrigin = RuntimeOrigin;
-	type Nonce = u64;
-	type RuntimeCall = RuntimeCall;
-	type Hash = H256;
-	type Hashing = BlakeTwo256;
 	type AccountId = u128;
-	type Lookup = IdentityLookup<Self::AccountId>;
+	type Lookup = sp_runtime::traits::IdentityLookup<Self::AccountId>;
 	type Block = Block;
-	type RuntimeEvent = RuntimeEvent;
-	type BlockHashCount = BlockHashCount;
-	type DbWeight = ();
-	type Version = ();
 	type AccountData = pallet_balances::AccountData<u128>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
-	type SystemWeightInfo = ();
-	type PalletInfo = PalletInfo;
-	type BlockWeights = ();
-	type BlockLength = ();
-	type SS58Prefix = ();
-	type OnSetCode = ();
-	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
 impl pallet_balances::Config for Test {

@@ -10,13 +10,9 @@ use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
 
-use frame_support::{assert_ok, parameter_types, traits::Contains, PalletId};
+use frame_support::{assert_ok, derive_impl, parameter_types, traits::Contains, PalletId};
 use frame_system::RawOrigin;
-use sp_core::H256;
-use sp_runtime::{
-	traits::{BlakeTwo256, IdentityLookup, Zero},
-	RuntimeDebug,
-};
+use sp_runtime::{traits::Zero, RuntimeDebug};
 
 use crate as stable_amm;
 use crate::{
@@ -117,30 +113,12 @@ pub enum PoolType {
 	P6(PoolToken, PoolToken, PoolToken, PoolToken, PoolToken, PoolToken),
 }
 
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Test {
-	type BaseCallFilter = frame_support::traits::Everything;
-	type RuntimeOrigin = RuntimeOrigin;
-	type Nonce = u64;
+	type AccountId = AccountId;
+	type Lookup = sp_runtime::traits::IdentityLookup<Self::AccountId>;
 	type Block = Block;
-	type RuntimeCall = RuntimeCall;
-	type Hash = H256;
-	type Hashing = BlakeTwo256;
-	type AccountId = u128;
-	type Lookup = IdentityLookup<Self::AccountId>;
-	type RuntimeEvent = RuntimeEvent;
-	type BlockHashCount = BlockHashCount;
-	type DbWeight = ();
-	type Version = ();
 	type AccountData = pallet_balances::AccountData<u128>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
-	type SystemWeightInfo = ();
-	type PalletInfo = PalletInfo;
-	type BlockWeights = ();
-	type BlockLength = ();
-	type SS58Prefix = ();
-	type OnSetCode = ();
-	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
 impl orml_tokens::Config for Test {
