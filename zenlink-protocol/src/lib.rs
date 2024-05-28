@@ -534,8 +534,8 @@ pub mod pallet {
 
 			Self::mutate_lp_pairs(asset_0, asset_1)?;
 
-			let lp_asset_id =
-				Self::lp_pairs((asset_0, asset_1)).ok_or(Error::<T>::InsufficientAssetBalance)?;
+			let lp_asset_id = Self::lp_pairs(Self::sort_asset_id(asset_0, asset_1))
+				.ok_or(Error::<T>::InsufficientAssetBalance)?;
 			let new_receiver = T::Lookup::lookup(fee_recipient)?;
 			FeeReceiver::<T>::mutate(lp_asset_id, |receiver| *receiver = Some(new_receiver));
 
